@@ -1,4 +1,5 @@
-﻿using ChallengeAPI.Models;
+﻿using ChallengeAPI.Data;
+using ChallengeAPI.Models;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -11,29 +12,34 @@ namespace ChallengeAPI.Controllers
     [Route("[controller]")]
     public class UsuarioController : ControllerBase
     {
+        private AppDbContext context;
+
+        //inicializanodo o nosso context 
+        public UsuarioController(AppDbContext context)
+        {
+            this.context = context;
+        }
+
         // Criado a lista para realização de teste pelo postman, para ver a chegada e retorno das requisições
         private static List<Usuario> usuarios = new List<Usuario>();
 
         [HttpPost]
-        public void CadastraUsuario([FromBody] Usuario usuario) 
+        public IActionResult CadastraUsuario([FromBody] Usuario usuario) 
         {
-            //Criando um teste para ver se esta chegando ao metodo
-            usuarios.Add(usuario);
-            Console.WriteLine(usuario.Nome);
-            Console.WriteLine(usuario.DataNascimento);
+            context.Usuarios.Add(usuario);
+            context.SaveChanges();
+            
+            return CreatedAtAction(nameof(RecuperaUsuario), new { Id = usuario.IdUsuario }, usuario);
         }
 
         [HttpGet("{id}")]
-        public Usuario RecuperaUsuario(int id)
+        public  IActionResult RecuperaUsuario(int id)
         {
-            //Testes Realizados para ver a devolução da requisição/dado
-            foreach (Usuario u in usuarios)
-            {
-                if(u.IdUsuario == id)
-                return u;
-            }
+            Usuario usuario = context.Usuarios.FirstOrDefault(u => u.IdUsuario == id);
+            if (usuario != null)
+                return Ok(usuario);
 
-            return null;
+            return NotFound();
         }
     }
 }

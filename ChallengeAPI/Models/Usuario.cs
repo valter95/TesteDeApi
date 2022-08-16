@@ -17,7 +17,5 @@ namespace ChallengeAPI.Models
         [Required (ErrorMessage = "A data de nascimento deve ser informado")]
         [DataType(DataType.Date)]
         public DateTime DataNascimento { get; set; }
-        
-
     }
 }
