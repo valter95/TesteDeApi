@@ -32,6 +32,13 @@ namespace ChallengeAPI.Controllers
             return CreatedAtAction(nameof(RecuperaUsuario), new { Id = usuario.IdUsuario }, usuario);
         }
 
+        [HttpGet]
+        public IActionResult RecuperarUsuario()
+        {
+            //utilizado o context para resgatar e salvar as informações no banco;
+            return Ok(context.Usuarios);
+        }
+
         [HttpGet("{id}")]
         public  IActionResult RecuperaUsuario(int id)
         {
@@ -40,6 +47,27 @@ namespace ChallengeAPI.Controllers
                 return Ok(usuario);
 
             return NotFound();
+        }
+
+        [HttpPut("{id}")]
+        public IActionResult AtualizaUsuario(int id, [FromBody] Usuario usuario)
+        {
+            Usuario user = context.Usuarios.FirstOrDefault(u => u.IdUsuario == id);
+            user.Nome = usuario.Nome;
+            user.DataNascimento = usuario.DataNascimento;
+            context.Update(user);
+            context.SaveChanges();
+            return Ok();
+        }
+
+        [HttpDelete("{id}")]
+        public IActionResult DeletaEndereco(int id)
+        {
+           Usuario user = context.Usuarios.FirstOrDefault(u => u.IdUsuario == id);
+
+            context.Remove(user);
+            context.SaveChanges();
+            return Ok();
         }
     }
 }
